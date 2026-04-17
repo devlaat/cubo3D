@@ -167,6 +167,7 @@ export default function Page() {
             onSeek={seekPlayback}
             onTogglePlayback={togglePlayback}
             promises={promises}
+            onReturn={() => setStage('intro')}
           />
         )}
       </section>

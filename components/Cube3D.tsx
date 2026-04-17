@@ -4,13 +4,18 @@ import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } f
 import Image from 'next/image'
 
 const faces = [
-  { src: '/img/image1.jpg', alt: 'Recuerdo 1', label: 'Tu sonrisa' },
-  { src: '/img/image2.jpg', alt: 'Recuerdo 2', label: 'Nuestra vibra' },
-  { src: '/img/image3.jpg', alt: 'Recuerdo 3', label: 'Momentos lindos' },
+  { src: '/img/image1.png', alt: 'Recuerdo 1', label: 'Pure love' },
+  { src: '/img/image2.jpg', alt: 'Recuerdo 2', label: 'Lukass' },
+  { src: '/img/image3.jpg', alt: 'Recuerdo 3', label: 'Thorfinn' },
   { src: '/img/image4.jpg', alt: 'Recuerdo 4', label: 'Tu mirada' },
-  { src: '/img/image5.jpg', alt: 'Recuerdo 5', label: 'Mas recuerdos' },
-  { src: '/img/image6.jpg', alt: 'Recuerdo 6', label: 'Contigo' },
+  { src: '/img/image5.jpg', alt: 'Recuerdo 5', label: 'Las wawas' },
+  { src: '/img/image6.jpg', alt: 'Recuerdo 6', label: 'Luu' },
 ]
+
+const getImageUrl = (src: string) => {
+  const timestamp = new Date().toISOString().split('T')[0]
+  return `${src}?t=${timestamp}`
+}
 
 const AUTO_ROTATION_SPEED = 0.0225
 const DRAG_ROTATION_SPEED = 0.4
@@ -114,11 +119,12 @@ export default function Cube3D() {
           {faces.map((face, index) => (
             <div key={face.src} className={`face face-${index + 1}`}>
               <Image
-                src={face.src}
+                src={getImageUrl(face.src)}
                 alt={face.alt}
                 fill
                 sizes="(max-width: 640px) 160px, 220px"
                 className="rounded-[inherit] object-cover"
+                unoptimized
               />
               <div className="absolute inset-0 rounded-[inherit] bg-[linear-gradient(180deg,transparent_28%,rgba(15,23,42,0.12)_55%,rgba(15,23,42,0.65)_100%)]" />
               <span className="absolute inset-x-3 bottom-3 rounded-full bg-white/18 px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur sm:text-xs">
@@ -128,9 +134,6 @@ export default function Cube3D() {
           ))}
         </div>
       </div>
-      <p className="text-center text-[11px] font-medium uppercase tracking-[0.22em] text-rose-400 sm:text-xs">
-        Arrastralo con mouse o con tu dedo
-      </p>
     </div>
   )
 }

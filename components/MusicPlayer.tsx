@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds)) {
     return '0:00'
@@ -39,24 +41,35 @@ export default function MusicPlayer({
           </p>
         </div>
 
-        <div className="flex w-full flex-col gap-4 rounded-[1.6rem] border border-white/70 bg-white/70 p-4 shadow-sm lg:max-w-[360px]">
+        <div className="mx-auto w-full flex flex-col gap-4 rounded-[1.6rem] border border-white/70 bg-gradient-to-br from-white/80 to-rose-50/70 p-4 shadow-md lg:max-w-[420px]">
+          <div className="relative mb-4 h-32 w-full overflow-hidden rounded-[1.3rem] border border-white/50 shadow-lg sm:h-40">
+            <Image
+              src="https://cdn-images.dzcdn.net/images/cover/6e92f911c0e0a2ff8bdb39913f455633/1900x1900-000000-80-0-0.jpg"
+              alt="Portada del artista"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          </div>
+
           <div className="flex items-center gap-4">
             <button
               type="button"
               onPointerUp={() => void onTogglePlayback()}
-              className="relative z-30 flex h-12 w-12 shrink-0 touch-manipulation items-center justify-center rounded-full bg-[linear-gradient(135deg,#e11d48,#fb7185)] text-lg text-white shadow-lg shadow-rose-200/70 transition hover:scale-105 sm:h-14 sm:w-14 sm:text-xl"
+              className="relative z-30 flex h-14 w-14 shrink-0 touch-manipulation items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-lg text-white shadow-lg shadow-rose-300/50 transition hover:scale-110 sm:h-16 sm:w-16 sm:text-2xl"
               aria-label={isPlaying ? 'Pausar cancion' : 'Reproducir cancion'}
             >
               {isPlaying ? '❚❚' : '▶'}
             </button>
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="font-semibold text-slate-800">Risa</p>
-              <p className="text-sm text-slate-500">Un detalle para ti</p>
+              <p className="text-sm text-slate-600">Un detalle para ti</p>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="mt-4 space-y-2">
             <input
               type="range"
               min={0}
