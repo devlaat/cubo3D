@@ -71,7 +71,7 @@ export default function GiftScreen({
               </div>
               <Cube3D />
               <p className="text-center text-sm leading-7 text-slate-600">
-                Cada giro ahora muestra una de tus fotos de la carpeta `public/img`.
+                Gira automaticamente y tambien puedes arrastrarlo con el mouse o con tu dedo para verlo libremente.
               </p>
             </div>
           </div>

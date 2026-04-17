@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import Image from 'next/image'
 
 const faces = [
@@ -11,11 +12,105 @@ const faces = [
   { src: '/img/image6.jpg', alt: 'Recuerdo 6', label: 'Contigo' },
 ]
 
+const AUTO_ROTATION_SPEED = 0.0225
+const DRAG_ROTATION_SPEED = 0.4
+
 export default function Cube3D() {
+  const cubeRef = useRef<HTMLDivElement>(null)
+  const frameRef = useRef<number | null>(null)
+  const lastFrameTimeRef = useRef<number | null>(null)
+  const rotationXRef = useRef(-18)
+  const rotationYRef = useRef(0)
+  const isDraggingRef = useRef(false)
+  const pointerIdRef = useRef<number | null>(null)
+  const pointerPositionRef = useRef({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+
+  const syncRotation = () => {
+    const cube = cubeRef.current
+
+    if (!cube) {
+      return
+    }
+
+    cube.style.transform = `rotateX(${rotationXRef.current}deg) rotateY(${rotationYRef.current}deg)`
+  }
+
+  useEffect(() => {
+    syncRotation()
+
+    const animate = (time: number) => {
+      if (lastFrameTimeRef.current === null) {
+        lastFrameTimeRef.current = time
+      }
+
+      if (!isDraggingRef.current) {
+        const delta = time - lastFrameTimeRef.current
+        rotationYRef.current += delta * AUTO_ROTATION_SPEED
+        syncRotation()
+      }
+
+      lastFrameTimeRef.current = time
+      frameRef.current = window.requestAnimationFrame(animate)
+    }
+
+    frameRef.current = window.requestAnimationFrame(animate)
+
+    return () => {
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current)
+      }
+    }
+  }, [])
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    pointerIdRef.current = event.pointerId
+    pointerPositionRef.current = { x: event.clientX, y: event.clientY }
+    isDraggingRef.current = true
+    lastFrameTimeRef.current = null
+    setIsDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || pointerIdRef.current !== event.pointerId) {
+      return
+    }
+
+    const deltaX = event.clientX - pointerPositionRef.current.x
+    const deltaY = event.clientY - pointerPositionRef.current.y
+
+    pointerPositionRef.current = { x: event.clientX, y: event.clientY }
+    rotationYRef.current += deltaX * DRAG_ROTATION_SPEED
+    rotationXRef.current -= deltaY * DRAG_ROTATION_SPEED
+    syncRotation()
+  }
+
+  const stopDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (pointerIdRef.current !== event.pointerId) {
+      return
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    pointerIdRef.current = null
+    isDraggingRef.current = false
+    lastFrameTimeRef.current = null
+    setIsDragging(false)
+  }
+
   return (
-    <div className="mx-auto flex items-center justify-center py-6">
-      <div className="cube-wrapper">
-        <div className="cube-container">
+    <div className="mx-auto flex flex-col items-center justify-center gap-3 py-6">
+      <div
+        className={`cube-wrapper ${isDragging ? 'is-dragging' : ''}`}
+        onPointerCancel={stopDragging}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={stopDragging}
+      >
+        <div ref={cubeRef} className="cube-container">
           {faces.map((face, index) => (
             <div key={face.src} className={`face face-${index + 1}`}>
               <Image
@@ -33,6 +128,9 @@ export default function Cube3D() {
           ))}
         </div>
       </div>
+      <p className="text-center text-[11px] font-medium uppercase tracking-[0.22em] text-rose-400 sm:text-xs">
+        Arrastralo con mouse o con tu dedo
+      </p>
     </div>
   )
 }
